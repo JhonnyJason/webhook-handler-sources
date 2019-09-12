@@ -48,19 +48,24 @@ isToReact = (ref, branchToReact) ->
 
 onPush = (repo, data) ->
     log "onPush"
-    console.log JSON.stringify(repo, null, 2)
-    console.log JSON.stringify(data, null ,2)
+    # console.log JSON.stringify(repo, null, 2)
+    # console.log JSON.stringify(data, null ,2)
 
-    ## TODO: implement reasonably^^
-    # repo = event.payload.repository.name
-    # ref = event.payload.ref
-    # branchToReact = cfg.branchReactionMap[repo]  
-    # command = cfg.commandMap[repo]
-    # log 'Received a push event for ' + repo + ' to ' + ref
-    # if command and isToReact(ref, branchToReact)
-    #     log 'So we write Command: ' + command
-    #     writeCommand command
-    # return
+    ref = data.ref
+    branch = cfg.branchReactionMap[repo]  
+    command = cfg.commandMap[repo]
+
+    log 'Received a push event for ' + repo + ' to ' + ref
+    log 'Reaction for branch ' + branch
+    log 'Command ' + command
+    
+    if branch and command and isToReact(ref, branch)
+        log 'So we write Command: ' + command
+        writeCommand command
+    
+    res.sendStatus(200)
+    process.exit(0)
+    
 
 onError = (err, req, res) ->
     log "onError"
@@ -69,11 +74,12 @@ onError = (err, req, res) ->
     # if err then res.sendStatus(400)
     process.exit(0) 
 
-onPing = (err, req, res) ->
-    log "onPing"
-
-onAnything = (err, req, res) ->
+onAnything = (event, repo, data) ->
     log "onAnything"
+    log "event: " + event
+    if event != "push"
+        res.sendStatus(200)
+        process.exit(0)
 
 createHandler = -> 
     log "createHandler"
@@ -81,9 +87,8 @@ createHandler = ->
         path: cfg.uri
         secret: cfg.secret
     handler = githubWebhook(argument)
-    handler.on("push", onPush)
-    handler.on("ping", onPing)
     handler.on("*", onAnything)
+    handler.on("push", onPush)
     handler.on("error", onError)
     return handler
 #endregion
