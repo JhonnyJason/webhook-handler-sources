@@ -6,7 +6,7 @@ debugmodule.initialize = () ->
 
 debugmodule.modulesToDebug = 
     unbreaker: true
-    # configmodule: true
+    configmodule: true
     scimodule: true
     # startupmodule: true
     webhookhandlermodule: true

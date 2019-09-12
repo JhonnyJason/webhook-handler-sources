@@ -64,9 +64,16 @@ onPush = (repo, data) ->
 
 onError = (err, req, res) ->
     log "onError"
+    # log JSON.stringify(req.body, null, 2)
     # console.log err
     # if err then res.sendStatus(400)
     process.exit(0) 
+
+onPing = (err, req, res) ->
+    log "onPing"
+
+onAnything = (err, req, res) ->
+    log "onAnything"
 
 createHandler = -> 
     log "createHandler"
@@ -75,6 +82,8 @@ createHandler = ->
         secret: cfg.secret
     handler = githubWebhook(argument)
     handler.on("push", onPush)
+    handler.on("ping", onPing)
+    handler.on("*", onAnything)
     handler.on("error", onError)
     return handler
 #endregion
