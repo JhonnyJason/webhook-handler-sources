@@ -63,7 +63,7 @@ onPush = (repo, data) ->
         log 'So we write Command: ' + command
         writeCommand command
     
-    res.sendStatus(200)
+    # res.sendStatus(200)
     process.exit(0)
     
 
@@ -78,7 +78,7 @@ onAnything = (event, repo, data) ->
     log "onAnything"
     log "event: " + event
     if event != "push"
-        res.sendStatus(200)
+        # res.sendStatus(200)
         process.exit(0)
 
 createHandler = -> 
