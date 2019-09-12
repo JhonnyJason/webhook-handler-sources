@@ -1,4 +1,4 @@
 #!/bin/bash
-# cp sources/patches/gsap-patch/* node_modules/gsap/
+cp sources/patches/express-github-webhook.js node_modules/express-github-webhook/index.js
 
 echo 0
