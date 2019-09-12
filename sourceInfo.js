@@ -3,7 +3,7 @@ module.exports = {
         return {
             "body-parser": "^1.18.3",
             "express": "^4.16.3",
-            "github-webhook-handler": "^0.7.1",
+            "express-github-webhook": "^1.0.6",
             "systemd": "^0.3.1"
         }
 

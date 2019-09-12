@@ -14,20 +14,19 @@ log = (arg) ->
 
 #region internal variables
 cfg = null
+whh = null
 
 app = null
-
-responded = false
 #endregion
 
 ##initialization function  -> is automatically being called!  ONLY RELY ON DOM AND VARIABLES!! NO PLUGINS NO OHTER INITIALIZATIONS!!
 scimodule.initialize = () ->
     log "scimodule.initialize"
     cfg = allModules.configmodule
-    search = allModules.citysearchmodule
+    whh = allModules.webhookhandlermodule
+    
     app = express()
     app.use bodyParser.urlencoded(extended: false)
-    # app.use privateParser
     app.use bodyParser.json()
     app.use parseErrorCatch
 
@@ -36,38 +35,22 @@ scimodule.initialize = () ->
 parseErrorCatch = (error, req, res, next) ->
     log "parseErrorCatch"
     log error
-    if error then termination(req, res)
-    next()
-
-setAllowedOrigins = ->
-    log "setAllowedOrigins"
-    # app.use (req, res, next) ->
-    #     allowedOrigins = cfg.allowedOrigins
-    #     # origin = req.headers.origin
-    #     # log 'header origin was: ' + origin
-    #     # if allowedOrigins.indexOf(origin) > -1
-    #     #     res.setHeader 'Access-Control-Allow-Origin', origin
-    #     # res.header 'Access-Control-Allow-Methods', 'POST, OPTIONS'
-    #     # res.header 'Access-Control-Allow-Headers', 'Content-Type'
-    #     next()
+    if error then termination(true, req, res)
+    # next()
 
 attachSCIFunctions = ->
     log "attachSCIFunctions"
-    app.post '/webhook', onWebhook
+    app.use whh.getHandler()
 
 ## SCI handler functions
-onWebhook = (req, res) ->
-    log 'onWebhook'
-    try
-        log "\n" + JSON.stringify(req.body, null, 2)
-        result = "ok"
-    catch error then result = "error"
-    finally
-        res.header 'Connection', 'close'
-        res.end result
-        responded = true
-        termination(req, res)
-    return
+attachTermination = ->
+    log "attachTermination"
+    app.use(termination)
+
+termination = (err, req, res) ->
+    log "termination"
+    if err then res.sendStatus(400)
+    process.exit(0)
 
 listenForRequests = ->
     log "listenForRequests"
@@ -79,22 +62,12 @@ listenForRequests = ->
         app.listen port
         log "listening on port: " + port
 
-attachTermination = ->
-    log "attachTermination"
-    app.use(termination)
-
-termination = (req, res, err) ->
-    log "termination"
-    if !responded or err then res.sendStatus(400)
-    process.exit(0)
-
 #endregion
 
 
 #region exposed functions
 scimodule.prepareAndExpose = ->
     log "scimodule.prepareAndExpose"
-    setAllowedOrigins()
     attachSCIFunctions()
     attachTermination()
     listenForRequests()

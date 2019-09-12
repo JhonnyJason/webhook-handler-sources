@@ -10,7 +10,6 @@ log = (arg) ->
 sci = null
 #endregion
 
-
 ##initialization function  -> is automatically being called!  ONLY RELY ON DOM AND VARIABLES!! NO PLUGINS NO OHTER INITIALIZATIONS!!
 startupmodule.initialize = () ->
     log "startupmodule.initialize"

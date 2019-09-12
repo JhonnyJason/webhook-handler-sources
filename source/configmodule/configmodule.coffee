@@ -14,12 +14,14 @@ configmodule.initialize = () ->
     log "configmodule.initialize"
     try 
         configString = String(fs.readFileSync("../webhook-config.json"))
-        externalConfig = JSON.parse(configString)        
+        externalConfig = JSON.parse(configString)
+        Object.assign(configmodule, externalConfig)      
     catch error
         log error
         try 
             configString = String(fs.readFileSync("../testing/webhook-config.json"))
             externalConfig = JSON.parse(configString)
+            Object.assign(configmodule, externalConfig)      
         catch error
             log error
             console.log "We could read no config file... we die. Bye!"
@@ -28,6 +30,12 @@ configmodule.initialize = () ->
 
 #region the configuration Object
 configmodule.defaultPort = 3003
+configmodule.socketPath = "defaultSocketPath"
+
+# socketPath = config.socketPath
+# commandMap = config.commandMap
+# port = config.port
+
 # configmodule.allowedOrigins = [
 #     'http://localhost:3002'
 #     'http://localhost:3003'

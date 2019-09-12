@@ -6,11 +6,10 @@ debugmodule.initialize = () ->
 
 debugmodule.modulesToDebug = 
     unbreaker: true
-    # citysearchmodule: true
-    configmodule: true
+    # configmodule: true
     scimodule: true
     # startupmodule: true
-
+    webhookhandlermodule: true
 #region exposed variables
 
 export default debugmodule
