@@ -32,19 +32,35 @@ writeCommand = (command) ->
         print 'Command could not be written to socket!'
     return
 
-isToReact = (ref, branchToReact) ->
+isToReact = (ref, branches, commands) ->
     log "isToReact?"
     log "ref: " + ref
-    log "branchToReact: " + branchToReact
-    branchReactionMap = "/" + branchToReact
-    ##check if the /branchToReact string is the last part of the ref
-    lb = branchToReact.length
+    log "branches: " + branches
+
+    # for backwards compatibility only one possible branch
+    if typeof branches == "string"
+        if isBranchInRef(ref, branches) 
+            if typeof commands == "string" 
+                return commands
+        return 0
+    
+    for branch,i in branches
+        if isBranchInRef(ref, branch)
+            return "" + commands[i] + "\n"
+
+    return 0
+
+
+isBranchInRef = (ref, branch) ->
+    log "isBranchInRef"
+    lb = branch.length
     lr = ref.length
-    i = ref.lastIndexOf(branchToReact)
+    i = ref.lastIndexOf(branch)
     
     if i < 0 then return false
     if i == (lr - lb) then return true
     return false
+
 
 onPush = (repo, data) ->
     log "onPush"
@@ -52,17 +68,17 @@ onPush = (repo, data) ->
     # console.log JSON.stringify(data, null ,2)
 
     ref = data.ref
-    branch = cfg.branchReactionMap[repo]  
-    command = cfg.commandMap[repo]
+    branches = cfg.branchReactionMap[repo]  
+    commands = cfg.commandMap[repo]
 
     log 'Received a push event for ' + repo + ' to ' + ref
-    log 'Reaction for branch ' + branch
-    log 'Command ' + command
+    log 'Reaction for branch ' + branches
+    log 'Command ' + commands
     
-    if branch and command and isToReact(ref, branch)
-        log 'So we write Command: ' + command
-        writeCommand command
-    
+    if branches and commands
+        command = isToReact(ref, branches, commands)
+        if command != 0 then writeCommand command
+
     # res.sendStatus(200)
     process.exit(0)
     
