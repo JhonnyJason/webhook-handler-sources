@@ -77,7 +77,10 @@ onPush = (repo, data) ->
     
     if branches and commands
         command = isToReact(ref, branches, commands)
-        if command != 0 then writeCommand command
+        if command != 0 
+            writeCommand "0\n"
+            writeCommand command
+            writeCommand "-1\n"
 
     # res.sendStatus(200)
     process.exit(0)

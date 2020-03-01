@@ -43,7 +43,7 @@ Also the socket has been specified by the configuration.
 {
     "uri": "/webhook",
     "secret": "shittysecret",
-    "socketPath": "/run/commander.sk",
+    "socketPath": "/run/executor.sk",
     "port": 65531,
     "branchReactionMap": {
         "repository-1": ["release", "test"]
